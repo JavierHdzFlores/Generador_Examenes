@@ -1,0 +1,108 @@
+# 🧠 AI-Powered Exam Generator API
+
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+![Google Gemini API](https://img.shields.io/badge/Google%20Gemini-8E75B2?style=for-the-badge&logo=googlegemini&logoColor=white)
+![API RESTful](https://img.shields.io/badge/API-RESTful-005571?style=for-the-badge)
+
+Una potente API RESTful diseñada para generar, administrar y evaluar exámenes de forma dinámica utilizando Inteligencia Artificial. El sistema cuenta con autenticación de usuarios, gestión del banco de preguntas y un registro histórico de calificaciones.
+
+---
+
+## 🗄️ Modelo de Base de Datos
+
+
+
+El sistema utiliza **PostgreSQL** y se compone de 4 tablas principales diseñadas para mantener la integridad relacional y separar lógicamente los procesos.
+
+### 1. 👤 `usuarios`
+Gestiona la autenticación y el perfil de estudiantes y administradores.
+
+| Campo | Tipo | Descripción |
+| :--- | :--- | :--- |
+| `id` | UUID / Int | **Primary Key** |
+| `nombre` | VARCHAR(100) | Nombre del usuario. |
+| `correo` | VARCHAR(150) | Correo electrónico (Único). |
+| `password_hash` | VARCHAR(255) | Contraseña encriptada. |
+| `rol` | VARCHAR(20) | Ej. `admin` o `estudiante`. |
+| `fecha_registro`| TIMESTAMP | Fecha de alta en el sistema. |
+
+### 2. 📝 `preguntas`
+Almacena el banco de preguntas, poblado tanto manualmente como por la IA.
+
+| Campo | Tipo | Descripción |
+| :--- | :--- | :--- |
+| `id` | UUID / Int | **Primary Key** |
+| `tema` | VARCHAR(100) | Área de conocimiento (ej. *ReactJS*). |
+| `texto_pregunta`| TEXT | El enunciado de la pregunta. |
+| `fecha_creacion`| TIMESTAMP | Fecha en la que se generó. |
+
+### 3. ✅ `respuestas`
+Opciones generadas para cada pregunta. Soporta falso/verdadero y opción múltiple.
+
+| Campo | Tipo | Descripción |
+| :--- | :--- | :--- |
+| `id` | UUID / Int | **Primary Key** |
+| `pregunta_id` | UUID / Int | **Foreign Key** -> `preguntas.id` |
+| `texto_respuesta`| TEXT | El texto de la opción (ej. *Da Vinci*). |
+| `es_correcta` | BOOLEAN | `true` si es correcta, `false` si es distractor. |
+
+### 4. 📊 `puntajes`
+Registro histórico de los exámenes tomados por los usuarios.
+
+| Campo | Tipo | Descripción |
+| :--- | :--- | :--- |
+| `id` | UUID / Int | **Primary Key** |
+| `usuario_id` | UUID / Int | **Foreign Key** -> `usuarios.id` |
+| `tema_evaluado` | VARCHAR(100) | Temática del examen evaluado. |
+| `calificacion` | DECIMAL / INT | Puntaje obtenido (ej. 85 o 8.5). |
+| `fecha_examen` | TIMESTAMP | Cuándo se tomó el examen. |
+
+---
+
+## 🌐 Referencia de la API
+
+Todas las rutas utilizan el prefijo base: `/api/v1`
+
+### 🔐 Autenticación y Usuarios
+Maneja el registro, inicio de sesión y gestión de perfiles.
+
+| Método | Endpoint | Descripción | Body / Params |
+| :---: | :--- | :--- | :--- |
+| `POST` | `/auth/registro` | Crea un nuevo usuario. | `{ nombre, correo, password }` |
+| `POST` | `/auth/login` | Autentica y devuelve un token (JWT). | `{ correo, password }` |
+| `GET` | `/usuarios` | Obtiene la lista de usuarios (Solo Admin). | - |
+| `GET` | `/usuarios/:id`| Obtiene datos de un usuario específico. | `params: id` |
+| `PUT` | `/usuarios/:id`| Actualiza la información del usuario. | - |
+| `DELETE`| `/usuarios/:id`| Elimina un usuario de la BD. | `params: id` |
+
+### 🧠 Generación con IA (Core)
+Conexión directa con la API de Google Gemini para poblar la base de datos mágicamente.
+
+| Método | Endpoint | Descripción | Body |
+| :---: | :--- | :--- | :--- |
+| `POST` | `/generar-examen`| Envía un prompt a la IA, recibe el JSON, guarda preguntas/respuestas automáticamente y las devuelve al frontend. | `{ tema: "ReactJS", cantidad_preguntas: 10 }` |
+
+### 📚 Banco de Preguntas y Respuestas (CRUD)
+Administración detallada del contenido educativo.
+
+| Método | Endpoint | Descripción |
+| :---: | :--- | :--- |
+| `GET` | `/preguntas` | Obtiene las preguntas (soporta filtros ej. `?tema=Historia`). |
+| `GET` | `/preguntas/:id`| Obtiene una pregunta con sus respuestas asociadas. |
+| `POST` | `/preguntas` | Crea una pregunta manualmente. |
+| `PUT` | `/preguntas/:id`| Edita el texto de una pregunta generada o manual. |
+| `DELETE`| `/preguntas/:id`| Elimina una pregunta del banco. |
+| `POST` | `/respuestas` | Añade una nueva respuesta/distractor a una pregunta. |
+| `PUT` | `/respuestas/:id`| Corrige el texto de una respuesta o cambia su veracidad. |
+| `DELETE`| `/respuestas/:id`| Elimina una opción de respuesta. |
+
+### 🎯 Calificaciones (CRUD de Puntajes)
+Historial del desempeño de los estudiantes.
+
+| Método | Endpoint | Descripción | Body / Params |
+| :---: | :--- | :--- | :--- |
+| `POST` | `/puntajes` | Guarda la calificación final de un examen. | `{ usuario_id, tema_evaluado, calificacion }` |
+| `GET` | `/puntajes/usuario/:usuario_id`| Historial de calificaciones de un estudiante. | `params: usuario_id` |
+| `GET` | `/puntajes` | Obtiene todos los puntajes (Vista Admin). | - |
+| `PUT` | `/puntajes/:id`| Modifica un puntaje (correcciones). | `params: id` |
+| `DELETE`| `/puntajes/:id`| Elimina el registro de un examen. | `params: id` |
