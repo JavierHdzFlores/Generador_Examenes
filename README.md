@@ -32,9 +32,9 @@ El repositorio está organizado en fases de entrega:
 ## 👥 Equipo de Desarrollo
 
 Proyecto desarrollado para el 3er Parcial por:
-*[Hernandez Flores Javier]
-*[Gonzalez Giron Luis Eduardo]
-*[Suárez Dolores Miguel]
+* [Hernandez Flores Javier]
+* [Gonzalez Giron Luis Eduardo]
+* [Suárez Dolores Miguel]
 
 
 ---
