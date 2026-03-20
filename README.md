@@ -32,9 +32,10 @@ El repositorio está organizado en fases de entrega:
 ## 👥 Equipo de Desarrollo
 
 Proyecto desarrollado para el 3er Parcial por:
-* [Tu Nombre/Usuario]
-* [Nombre del Integrante 2]
-* [Nombre del Integrante 3 (Opcional)]
+*Hernández Flores Javier
+*Gonzalez Giron Luis Eduardo
+*Suárez Dolores Miguel
+
 
 ---
 *Nota: La implementación en vivo, video demostrativo y pruebas automatizadas (Playwright) se entregarán en la siguiente fase (23 de marzo).*
