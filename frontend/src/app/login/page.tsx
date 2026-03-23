@@ -52,29 +52,29 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-50 p-6">
       <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-lg">
-        <h1 className="mb-4 text-2xl font-extrabold text-slate-950">Iniciar sesión</h1>
+        <h1 className="mb-4 text-2xl font-extrabold text-black">Iniciar sesión</h1>
         {error ? (
-          <div className="mb-3 rounded bg-red-100 p-2 text-sm text-red-700">{error}</div>
+          <div className="mb-3 rounded bg-red-100 p-2 text-sm text-red-900">{error}</div>
         ) : null}
         <form onSubmit={handleSubmit} className="space-y-4">
           <label className="block">
-            <span className="block text-sm font-semibold text-slate-900">Email</span>
+            <span className="block text-sm font-semibold text-black">Email</span>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="mt-1 w-full rounded border border-slate-300 px-3 py-2 font-medium text-slate-950"
+              className="mt-1 w-full rounded border border-slate-300 px-3 py-2 font-medium text-black"
             />
           </label>
           <label className="block">
-            <span className="block text-sm font-semibold text-slate-900">Contraseña</span>
+            <span className="block text-sm font-semibold text-black">Contraseña</span>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="mt-1 w-full rounded border border-slate-300 px-3 py-2 font-medium text-slate-950"
+              className="mt-1 w-full rounded border border-slate-300 px-3 py-2 font-medium text-black"
             />
           </label>
           <button
@@ -85,9 +85,9 @@ export default function LoginPage() {
             {isLoading ? "Cargando..." : "Iniciar sesión"}
           </button>
         </form>
-        <p className="mt-3 text-sm font-medium text-slate-800">
+        <p className="mt-3 text-sm font-medium text-black">
           ¿No tienes cuenta?{" "}
-          <a href="/register" className="font-semibold text-indigo-700 hover:text-indigo-900">
+          <a href="/register" className="font-semibold text-indigo-900 hover:text-black">
             Regístrate
           </a>
         </p>
