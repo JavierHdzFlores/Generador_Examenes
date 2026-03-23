@@ -13,21 +13,23 @@ Este sistema permite a los estudiantes poner a prueba sus conocimientos resolvie
 * **CRUD de Preguntas y Respuestas:** Interfaz para que los administradores puedan crear, leer, actualizar y eliminar elementos del banco de preguntas.
 * **CRUD de Puntajes:** Registro automático de las calificaciones obtenidas por los usuarios al finalizar un examen, con capacidad de visualización de historial.
 
-## 🛠️ Stack Tecnológico (Propuesto)
+## 🛠️ Stack Tecnológico
 
-* **Frontend:** React.js / Vite (con Tailwind CSS para estilos rápidos).
-* **Backend:** Node.js con Express (o Python con FastAPI).
-* **Base de Datos:** PostgreSQL (Base de datos relacional).
+* **Frontend:** Next.js 16 con React 19 y TypeScript.
+* **Estilos:** Tailwind CSS 4 con PostCSS.
+* **Backend:** APIs integradas en Next.js.
+* **Autenticación:** NextAuth.js con Prisma Adapter.
+* **Base de Datos:** SQLite con Prisma ORM.
+* **Seguridad:** Bcrypt para hash de contraseñas.
 * **Inteligencia Artificial:** Google Gemini 1.5 API.
-* **Testing (Fase 2):** Playwright (E2E) y Jest/Vitest (Unitarias).
+* **Testing:** Playwright (E2E).
 
 ## 📂 Estructura del Repositorio
 
-El repositorio está organizado en fases de entrega:
+El repositorio está organizado de la siguiente manera:
 
 * `/propuesta`: Contiene los entregables de la primera fase de diseño (Modelo de Base de Datos, Propuesta de API Restful y Mockups/Pantallas). Consulta el `README.md` dentro de esa carpeta para ver los detalles técnicos.
-* `/frontend`: (Próximamente) Código fuente de la interfaz de usuario.
-* `/backend`: (Próximamente) Código fuente de la API y conexión a la base de datos.
+* `/frontend`: Código fuente completo de la aplicación (frontend, backend integrado y autenticación con Next.js).
 
 ## 👥 Equipo de Desarrollo
 
@@ -38,4 +40,4 @@ Proyecto desarrollado para el 3er Parcial por:
 
 
 ---
-*Nota: La implementación en vivo, video demostrativo y pruebas automatizadas (Playwright) se entregarán en la siguiente fase (23 de marzo).*
+*Nota: Implementación completada a 23 de marzo de 2026.*

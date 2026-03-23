@@ -1,108 +1,138 @@
-# 🧠 AI-Powered Exam Generator API
+# 🧠 AI-Powered Exam Generator
 
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=vercel&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white)
 ![Google Gemini API](https://img.shields.io/badge/Google%20Gemini-8E75B2?style=for-the-badge&logo=googlegemini&logoColor=white)
-![API RESTful](https://img.shields.io/badge/API-RESTful-005571?style=for-the-badge)
 
-Una potente API RESTful diseñada para generar, administrar y evaluar exámenes de forma dinámica utilizando Inteligencia Artificial. El sistema cuenta con autenticación de usuarios, gestión del banco de preguntas y un registro histórico de calificaciones.
+Aplicación full-stack con Next.js diseñada para generar, administrar y evaluar exámenes de forma dinámica utilizando Inteligencia Artificial. El sistema cuenta con autenticación de usuarios con NextAuth.js, gestión del banco de preguntas y un registro histórico de calificaciones.
 
 ---
 
 ## 🗄️ Modelo de Base de Datos
 
+El sistema utiliza **SQLite** con **Prisma ORM** y se compone de 6 modelos principales diseñados para mantener la integridad relacional y separar lógicamente los procesos.
 
-
-El sistema utiliza **PostgreSQL** y se compone de 4 tablas principales diseñadas para mantener la integridad relacional y separar lógicamente los procesos.
-
-### 1. 👤 `usuarios`
-Gestiona la autenticación y el perfil de estudiantes y administradores.
+### 1. 👤 `User`
+Gestiona la autenticación y el perfil de estudiantes. Integración con NextAuth.js.
 
 | Campo | Tipo | Descripción |
 | :--- | :--- | :--- |
-| `id` | UUID / Int | **Primary Key** |
-| `nombre` | VARCHAR(100) | Nombre del usuario. |
-| `correo` | VARCHAR(150) | Correo electrónico (Único). |
-| `password_hash` | VARCHAR(255) | Contraseña encriptada. |
-| `rol` | VARCHAR(20) | Ej. `admin` o `estudiante`. |
-| `fecha_registro`| TIMESTAMP | Fecha de alta en el sistema. |
+| `id` | String (CUID) | **Primary Key** |
+| `name` | String? | Nombre del usuario (opcional). |
+| `email` | String? | Correo electrónico (Único). |
+| `emailVerified` | DateTime? | Fecha de verificación de email. |
+| `image` | String? | URL de imagen de perfil. |
+| `hashedPassword` | String? | Contraseña encriptada con bcrypt. |
+| `accounts` | Account[] | Relación con proveedores OAuth. |
+| `sessions` | Session[] | Sesiones activas del usuario. |
+| `scores` | Score[] | Calificaciones del usuario. |
 
-### 2. 📝 `preguntas`
-Almacena el banco de preguntas, poblado tanto manualmente como por la IA.
-
-| Campo | Tipo | Descripción |
-| :--- | :--- | :--- |
-| `id` | UUID / Int | **Primary Key** |
-| `tema` | VARCHAR(100) | Área de conocimiento (ej. *ReactJS*). |
-| `texto_pregunta`| TEXT | El enunciado de la pregunta. |
-| `fecha_creacion`| TIMESTAMP | Fecha en la que se generó. |
-
-### 3. ✅ `respuestas`
-Opciones generadas para cada pregunta. Soporta falso/verdadero y opción múltiple.
+### 2. 📝 `Question`
+Almacena el banco de preguntas con opciones múltiples, poblado tanto manualmente como por la IA.
 
 | Campo | Tipo | Descripción |
 | :--- | :--- | :--- |
-| `id` | UUID / Int | **Primary Key** |
-| `pregunta_id` | UUID / Int | **Foreign Key** -> `preguntas.id` |
-| `texto_respuesta`| TEXT | El texto de la opción (ej. *Da Vinci*). |
-| `es_correcta` | BOOLEAN | `true` si es correcta, `false` si es distractor. |
+| `id` | Int | **Primary Key** (Auto-increment). |
+| `question` | String | El enunciado de la pregunta. |
+| `optionA` | String | Opción A de respuesta. |
+| `optionB` | String | Opción B de respuesta. |
+| `optionC` | String | Opción C de respuesta. |
+| `optionD` | String | Opción D de respuesta. |
+| `correct` | String | La letra de la opción correcta (A, B, C o D). |
+| `explanation` | String? | Explicación de la respuesta correcta. |
+| `createdAt` | DateTime | Fecha de creación. |
+| `updatedAt` | DateTime | Fecha de última actualización. |
+| `scores` | Score[] | Relación con calificaciones. |
 
-### 4. 📊 `puntajes`
-Registro histórico de los exámenes tomados por los usuarios.
+### 3. 🔐 `Account`
+Proveedor OAuth para autenticación de NextAuth.js.
 
 | Campo | Tipo | Descripción |
 | :--- | :--- | :--- |
-| `id` | UUID / Int | **Primary Key** |
-| `usuario_id` | UUID / Int | **Foreign Key** -> `usuarios.id` |
-| `tema_evaluado` | VARCHAR(100) | Temática del examen evaluado. |
-| `calificacion` | DECIMAL / INT | Puntaje obtenido (ej. 85 o 8.5). |
-| `fecha_examen` | TIMESTAMP | Cuándo se tomó el examen. |
+| `id` | String (CUID) | **Primary Key** |
+| `userId` | String | **Foreign Key** -> `User.id` |
+| `type` | String | Tipo de proveedor (oauth, credentials, etc). |
+| `provider` | String | Proveedor (google, github, etc). |
+| `providerAccountId` | String | ID del usuario en el proveedor. |
+| `access_token` | String? | Token de acceso del proveedor. |
+| `refresh_token` | String? | Token de refresco. |
+| `expires_at` | Int? | Timestamp de expiración. |
+
+### 4. 📊 `Score`
+Registro de puntuaciones de usuarios por pregunta.
+
+| Campo | Tipo | Descripción |
+| :--- | :--- | :--- |
+| `id` | Int | **Primary Key** (Auto-increment). |
+| `userId` | String | **Foreign Key** -> `User.id` |
+| `questionId` | Int | **Foreign Key** -> `Question.id` |
+| `points` | Int | Puntos obtenidos en la pregunta. |
+| `createdAt` | DateTime | Fecha en la que se respondió. |
+| `user` | User | Relación con el usuario. |
+| `question` | Question | Relación con la pregunta. |
+
+### 5. 🔑 `Session`
+Sesiones de NextAuth.js para mantener la autenticación de usuarios.
+
+| Campo | Tipo | Descripción |
+| :--- | :--- | :--- |
+| `id` | String (CUID) | **Primary Key** |
+| `sessionToken` | String | Token único de sesión. |
+| `userId` | String | **Foreign Key** -> `User.id` |
+| `expires` | DateTime | Fecha de expiración de la sesión. |
+
+### 6. 🛡️ `VerificationToken`
+Tokens de verificación de email para NextAuth.js.
+
+| Campo | Tipo | Descripción |
+| :--- | :--- | :--- |
+| `identifier` | String | Email del usuario. |
+| `token` | String | Token de verificación único. |
+| `expires` | DateTime | Fecha de expiración del token. |
 
 ---
 
 ## 🌐 Referencia de la API
 
-Todas las rutas utilizan el prefijo base: `/api/v1`
+Aplicación Next.js con API Routes integradas. Todas las rutas utilizan el prefijo base: `/api`
 
 ### 🔐 Autenticación y Usuarios
-Maneja el registro, inicio de sesión y gestión de perfiles.
+Maneja el registro, inicio de sesión y gestión de perfiles con NextAuth.js.
 
 | Método | Endpoint | Descripción | Body / Params |
 | :---: | :--- | :--- | :--- |
-| `POST` | `/auth/registro` | Crea un nuevo usuario. | `{ nombre, correo, password }` |
-| `POST` | `/auth/login` | Autentica y devuelve un token (JWT). | `{ correo, password }` |
-| `GET` | `/usuarios` | Obtiene la lista de usuarios (Solo Admin). | - |
-| `GET` | `/usuarios/:id`| Obtiene datos de un usuario específico. | `params: id` |
-| `PUT` | `/usuarios/:id`| Actualiza la información del usuario. | - |
-| `DELETE`| `/usuarios/:id`| Elimina un usuario de la BD. | `params: id` |
+| `POST` | `/auth/register` | Crea un nuevo usuario. | `{ name, email, password }` |
+| `POST` | `/auth/[...nextauth]` | NextAuth.js maneja login y OAuth. | NextAuth callback |
+| `GET` | `/users` | Obtiene la lista de usuarios. | - |
+| `GET` | `/users/:id`| Obtiene datos de un usuario específico. | `params: id` |
+| `PUT` | `/users/:id`| Actualiza la información del usuario. | updated fields |
+| `DELETE`| `/users/:id`| Elimina un usuario de la BD. | `params: id` |
 
 ### 🧠 Generación con IA (Core)
-Conexión directa con la API de Google Gemini para poblar la base de datos mágicamente.
+Conexión directa con la API de Google Gemini para poblar la base de datos automáticamente.
 
 | Método | Endpoint | Descripción | Body |
 | :---: | :--- | :--- | :--- |
-| `POST` | `/generar-examen`| Envía un prompt a la IA, recibe el JSON, guarda preguntas/respuestas automáticamente y las devuelve al frontend. | `{ tema: "ReactJS", cantidad_preguntas: 10 }` |
+| `POST` | `/questions/generate`| Envía un prompt a la IA, recibe el JSON, guarda preguntas/respuestas automáticamente y las devuelve. | `{ topic: "ReactJS", quantity: 10 }` |
 
-### 📚 Banco de Preguntas y Respuestas (CRUD)
+### 📚 Banco de Preguntas (CRUD)
 Administración detallada del contenido educativo.
 
 | Método | Endpoint | Descripción |
 | :---: | :--- | :--- |
-| `GET` | `/preguntas` | Obtiene las preguntas (soporta filtros ej. `?tema=Historia`). |
-| `GET` | `/preguntas/:id`| Obtiene una pregunta con sus respuestas asociadas. |
-| `POST` | `/preguntas` | Crea una pregunta manualmente. |
-| `PUT` | `/preguntas/:id`| Edita el texto de una pregunta generada o manual. |
-| `DELETE`| `/preguntas/:id`| Elimina una pregunta del banco. |
-| `POST` | `/respuestas` | Añade una nueva respuesta/distractor a una pregunta. |
-| `PUT` | `/respuestas/:id`| Corrige el texto de una respuesta o cambia su veracidad. |
-| `DELETE`| `/respuestas/:id`| Elimina una opción de respuesta. |
+| `GET` | `/questions` | Obtiene todas las preguntas. |
+| `GET` | `/questions/:id`| Obtiene una pregunta específica con sus detalles. |
+| `POST` | `/questions` | Crea una pregunta manualmente. |
+| `PUT` | `/questions/:id`| Edita una pregunta. |
+| `DELETE`| `/questions/:id`| Elimina una pregunta del banco. |
 
-### 🎯 Calificaciones (CRUD de Puntajes)
+### 🎯 Calificaciones (CRUD de Scores)
 Historial del desempeño de los estudiantes.
 
 | Método | Endpoint | Descripción | Body / Params |
 | :---: | :--- | :--- | :--- |
-| `POST` | `/puntajes` | Guarda la calificación final de un examen. | `{ usuario_id, tema_evaluado, calificacion }` |
-| `GET` | `/puntajes/usuario/:usuario_id`| Historial de calificaciones de un estudiante. | `params: usuario_id` |
-| `GET` | `/puntajes` | Obtiene todos los puntajes (Vista Admin). | - |
-| `PUT` | `/puntajes/:id`| Modifica un puntaje (correcciones). | `params: id` |
-| `DELETE`| `/puntajes/:id`| Elimina el registro de un examen. | `params: id` |
+| `POST` | `/scores` | Guarda la puntuación de un usuario en una pregunta. | `{ userId, questionId, points }` |
+| `GET` | `/scores/:userId`| Historial de puntuaciones de un estudiante. | `params: userId` |
+| `GET` | `/scores` | Obtiene todas las puntuaciones (Vista Admin). | - |
+| `DELETE`| `/scores/:id`| Elimina el registro de una puntuación. | `params: id` |
