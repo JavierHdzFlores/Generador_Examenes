@@ -1,0 +1,33 @@
+# editor
+.vscode/
+
+# dependencies
+node_modules/
+
+# environment files
+.env
+.env.*
+!.env.example
+
+# local databases
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# logs and build output
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store
+
+# nested app artifacts
+frontend/.next/
+frontend/node_modules/
+frontend/playwright-report/
+frontend/test-results/
+frontend/dev.db
+frontend/dev.db-journal
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
