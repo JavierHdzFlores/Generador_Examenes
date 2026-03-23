@@ -36,40 +36,40 @@ export default function RegisterPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-50 p-6">
       <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-lg">
-        <h1 className="mb-4 text-2xl font-bold">Crear cuenta</h1>
+        <h1 className="mb-4 text-2xl font-bold text-black">Crear cuenta</h1>
         {error ? (
-          <div className="mb-3 rounded bg-red-100 p-2 text-sm text-red-700">{error}</div>
+          <div className="mb-3 rounded bg-red-100 p-2 text-sm text-red-900">{error}</div>
         ) : null}
         <form onSubmit={handleSubmit} className="space-y-4">
           <label className="block">
-            <span className="block text-sm font-medium">Nombre</span>
+            <span className="block text-sm font-medium text-black">Nombre</span>
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              className="mt-1 w-full rounded border border-slate-300 px-3 py-2"
+              className="mt-1 w-full rounded border border-slate-300 px-3 py-2 text-black"
               placeholder="Tu nombre"
             />
           </label>
           <label className="block">
-            <span className="block text-sm font-medium">Email</span>
+            <span className="block text-sm font-medium text-black">Email</span>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="mt-1 w-full rounded border border-slate-300 px-3 py-2"
+              className="mt-1 w-full rounded border border-slate-300 px-3 py-2 text-black"
               placeholder="tu@correo.com"
             />
           </label>
           <label className="block">
-            <span className="block text-sm font-medium">Contraseña</span>
+            <span className="block text-sm font-medium text-black">Contraseña</span>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="mt-1 w-full rounded border border-slate-300 px-3 py-2"
+              className="mt-1 w-full rounded border border-slate-300 px-3 py-2 text-black"
               placeholder="Mínimo 6 caracteres"
             />
           </label>
@@ -81,9 +81,9 @@ export default function RegisterPage() {
             {isLoading ? "Registrando..." : "Crear cuenta"}
           </button>
         </form>
-        <p className="mt-3 text-sm text-slate-600">
+        <p className="mt-3 text-sm text-black">
           ¿Ya tienes cuenta?{" "}
-          <a href="/login" className="text-indigo-600 hover:text-indigo-800">
+          <a href="/login" className="text-indigo-900 hover:text-black">
             Inicia sesión
           </a>
         </p>
